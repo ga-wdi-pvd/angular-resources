@@ -11,6 +11,26 @@
 
 In the last couple of classes, we've been using hard coded values in our controller to act as our "backend". We probably won't ever do that again. Instead we'll be connecting to an external API using resources and providing an interface to models using factories.
 
+# Angular Factories
+
+What is a Factory.
+
+Basically, it is an object. That is really it.
+
+It's purpose is to store data to be shared between multiple controllers.
+
+Even if you have one controller, it is nice to continue the process of seperation of concerns and storing the data for you controller functionality in it's own object.
+
+What makes an Angular Factory is that is is an already created object, and it can be inserted into the controller.
+
+### Factories vs Services
+
+We also have something in Angular called a Service. Services are objects too, just like Factories. The difference is that a Service is instantiated with the keyword `new` to create an instance of itself. 
+
+Like you have seen with constructor functions you can create multiple versions of the same Object that has similar precoded or inherited functionality.
+
+Factories are most commonly used for their data storing capabilities, but maybe you can think up some ways in which you would use a Service over a Factory.
+
 ## You Do: Walkthrough of Current App (20 minutes / 0:20)
 
 > With the person next to you, take 15 minutes to walk through the following part of the lesson plan, up to the `Factories` header. Read our descriptions of the different components.
