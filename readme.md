@@ -40,9 +40,8 @@ Factories are most commonly used for their data storing capabilities, but maybe 
 Run the below commands to clone this class' starter code. You will not be using the code you created in the `ui-router` class.  
 
 ```bash
-$ git clone https://github.com/ga-wdi-exercises/grumblr_angular.git
-$ cd grumblr_angular
-$ git checkout factory-resource-starter
+$ git clone git@github.com:estermer/grumblr-ng-factory.git
+$ cd grumblr-ng-factory
 ```
 
 Where we're picking up the app, it has...
