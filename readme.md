@@ -59,10 +59,12 @@ Where we're picking up the app, it has...
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-resource.min.js"></script>
 
-    <script src="js/app.js"></script>
+    <script src="js/grumblr.module.js"></script>
+    <script src="js/grumblr.controller.js"></script>
+    <script src="js/grumblr.router.js"></script>
   </head>
   <body>
-    <h1><a data-ui-sref="grumbleIndex">Grumblr</a></h1>
+    <h1>Grumblr</h1>
     <main data-ui-view></main>
   </body>
 </html>
