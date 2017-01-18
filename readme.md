@@ -92,31 +92,38 @@ Where we're picking up the app, it has...
 >  
 > **vm:** Represents the current instance of our index controller.  
 
-#### js/app.js
+#### js/grumblr.module.js
 
 ```js
-  angular
-  .module("grumblr", [
-    "ui.router"
-  ])
-  .config([
-    "$stateProvider",
-    RouterFunction
-  ]);
+(function(){
+  angular.module("grumblr", ["ui.router"]);
+})();
+```
 
+#### js/grumblr.router.js
+
+```js
+(function(){
+  angular
+    .module("grumblr")
+    .config(router);
+
+  router.$inject = ["$stateProvider"];
+  
   function RouterFunction($stateProvider){
     $stateProvider
-    .state("grumbleIndex", {
-      url: "/grumbles",
-      templateUrl: "js/ng-views/index.html",
-      controller: "GrumbleIndexController",
-      controllerAs: "vm"
-    })
-    .state("grumbleShow", {
-      url: "/grumbles/:id",
-      templateUrl: "js/ng-views/show.html"
-    });
+      .state("grumbleIndex", {
+        url: "/grumbles",
+        templateUrl: "js/ng-views/index.html",
+        controller: "GrumbleIndexController",
+        controllerAs: "vm"
+      })
+      .state("grumbleShow", {
+        url: "/grumbles/:id",
+        templateUrl: "js/ng-views/show.html"
+      });
   }
+})();
 ```
 > **.module:** A module is a container for controllers, directives, services -- all parts of our application. A module can have sub-modules .
 >  
@@ -130,9 +137,11 @@ Where we're picking up the app, it has...
 #### Index Controller
 
 ```js
-  .controller("GrumbleIndexController", [
-    GrumbleIndexControllerFunction
-  ]);
+
+(function(){
+  angular
+    .module("grumblr")
+    .controller("GrumbleIndexCtrl", GrumbleIndexCtrl);
 
   function GrumbleIndexControllerFunction(){
     this.grumbles = [
@@ -142,10 +151,11 @@ Where we're picking up the app, it has...
       {title: "Grumbles"}
     ]
   }
+})();
 ```
-> **GrumbleIndexController:** The name of this controller.  
+> **GrumbleIndexCtrl:** The name of this controller.  
 >  
-> **GrumbleIndexControllerFunction:** A function that contains this controller's behavior. This is a stylistic decision - we could have passed in an anonymous function to `.controller` if we wanted to.  
+> **GrumbleIndexCtrl:** A function that contains this controller's behavior. This is a stylistic decision - we could have passed in an anonymous function to `.controller` if we wanted to.  
 
 You'll notice that, at the moment, we have hard-coded models into the Grumbles controller. Today we'll be learning about `ngResource`, a module that allows us to make calls to that Rails API we'll set up now.
 
@@ -175,10 +185,15 @@ Factories allow us to separate concerns and extract functionality that would oth
 
 Let's start building out a factory in Grumblr.
 
+```bash
+$ touch js/grumblr.factory.js
+```
+
 ```js
-    .factory( "GrumbleFactory", [
-      GrumbleFactoryFunction
-    ]);
+(function(){
+  angular
+    .module("grumblr")
+    .factory( "GrumbleFactory", GrumbleFactoryFunction);
 
   function GrumbleFactoryFunction(){
     return {
@@ -187,6 +202,7 @@ Let's start building out a factory in Grumblr.
       }
     }
   }
+ })();
 ```
 > Factories can also take dependencies. In that case, the arguments passed into a factory will look a little different. We'll see that in play when we learn about `ng-resource` later today.
 
