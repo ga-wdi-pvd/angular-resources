@@ -75,7 +75,9 @@ Where we're picking up the app, it has...
 >
 > We use this instead of the usual `href` because `sref` refers to a state and automatically grabs the URL for that state. It's like link helpers in rails.
 >  
-> **data-ui-view:** Whichever view is triggered by the user will be displayed in the DOM element with this attribute.  
+> **data-ui-view:** Whichever view is triggered by the user will be displayed in the DOM element with this attribute. 
+>
+> **data-...:** There is no difference between adding data infront of our directives verses not adding it. All it does is eliminates errors that are thrown by HTML5 on the directive syntax.
 
 #### js/ng-views/index.html
 
