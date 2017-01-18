@@ -1,9 +1,9 @@
-# Factories, Services and `ngResource`
+# Factories, Services and `$http`
 
 ## Learning Objectives
 
 * Explain the purpose of Factories in Angular.
-* Use `ngResource` to pull information from an API.
+* Use `$http` to pull information from an API.
 * Use $stateParams to access query parameters and update the URL.
 * Create separate views and routes for each CRUD action.
 
@@ -63,9 +63,8 @@ Where we're picking up the app, it has...
 <html data-ng-app="grumblr">
   <head>
     <title>Angular</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-resource.min.js"></script>
 
     <script src="js/grumblr.module.js"></script>
     <script src="js/grumblr.controller.js"></script>
@@ -217,8 +216,6 @@ $ touch js/grumblr.factory.js
 Now we can call it in a controller...
 
 ```js
-    .controller( "GrumbleIndexCtrl", GrumbleIndexCtrl);
-    
   GrumbleIndexCtrl.$inject = ["GrumbleFactory"];
 
   function GrumbleIndexControllerFunction( GrumbleFactory ){
@@ -234,73 +231,10 @@ Now we can call it in a controller...
 
 Let's make a factory that's actually useful. It's purpose: enable us to perform CRUD actions on our Rails Grumblr API.  
 
-By default, Angular does not include a way to interact with APIs. For that, there is a separate module, called [ngResource](https://docs.angularjs.org/api/ngResource).  
+There is a service that we can inject into either our factory or our controller that will allow us to make AJAX calls to our Grumblr API... `$http`.
 
-Let's include it in our application using a CDN.  
+Let's include it in our application.  
 
-```html
-<!-- index.html -->
-
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.2/angular-resource.min.js"></script>
-```
-
-Add `ngResource` as a dependency to our application.
-
-```js
-  angular
-    .module( "grumbles", [
-      "ngResource"
-    ]);
-```
-
-```js
-    .factory( "GrumbleFactory", [
-      "$resource",
-      GrumbleFactoryFunction
-    ]);
-
-    function GrumbleFactoryFunction( $resource ){
-      return $resource( "http://localhost:3000/grumbles/:id" );
-    }
-```
-
-Out of the box, this gives us several methods for our newly defined `Grumble` service...
-
-* `GrumbleFactory.get`  
-* `GrumbleFactory.save`  
-* `GrumbleFactory.query`  
-* `GrumbleFactory.remove`  
-* `GrumbleFactory.delete`  
-
-> Where's `update`, you ask? We're going to define that ourselves later on.  
-
-When the data is returned from the server, the response object is an instance of the resource class. The actions `save`, `remove` and `delete` are available on it as methods with the `$` prefix. This allows you to easily perform CRUD operations on server-side data like this...  
-
-```js
-var Grumble = $resource('/grumbles/:id');
-var grumble = Grumble.get( { id:123 }, function(grumble) {
-  grumble.abc = true;
-  grumble.$save();
-});
-```
-
-#### Let's Test It Out With `.query`...
-
-Let's update our index controller so that, instead of using hard-coded grumbles, `this.grumbles` is set to the result of making a `GET` request to `http://localhost:3000/grumbles`.
-
-```js
-    .controller( "GrumbleIndexController", [
-      "GrumbleFactory",
-      GrumbleIndexControllerFunction
-    ]);
-
-    // Whenever `.grumbles` is called on our ViewModel, it returns the response from `.query()`
-    function GrumbleIndexControllerFunction( GrumbleFactory ){
-      this.grumbles = GrumbleFactory.query();
-    }
-```
 ### You Do: Create Grumble Factory + Update Index Controller (10 minutes / 1:00)
 
 ### Break (10 minutes / 1:10)
@@ -311,51 +245,9 @@ Let's update our index controller so that, instead of using hard-coded grumbles,
 
 #### Modify the Show `.state()` in `app.js`
 
-* Include values for `controller` and `controllerAs`.  
-
-```js
-.state("grumbleShow", {
-  url: "/grumbles/:id",
-  templateUrl: "js/ng-views/show.html",
-  controller: "GrumbleShowController",
-  controllerAs: "vm"
-});
-```
-
 #### Update `index.html`
 
-Each grumble listed here should link to its corresponding show page.
-
-```html
-<div data-ng-repeat="grumble in vm.grumbles | orderBy:'-created_at'">
-  <p><a data-ui-sref="grumbleShow({id: grumble.id})">{{grumble.title}}</a></p>
-</div>
-```
-> NOTE: The `data-ui-sref` attribute is not only set to route name `grumbleShow`, but `grumbleShow` also takes an `id` as an argument so that it knows which show page it should direct the user to.
-
 #### Create a Show Controller
-
-This will look very similar to the index controller, which a couple exceptions.  
-The controller requires access to ui-router's `$stateParams` service. We pass it in the same way we do `GrumbleFactory`.  
-* `$stateParams` returns an object containing the information passed into, in this case, `grumbleShow`. If we print it to the console, it looks like this...
-```js
-Object {id: "6"}
-```
-
-The controller will have a `grumble` property. It should be set to the return value of `ngResource`'s `get` method.
-* `ngResource`'s `get` method requires an object as an argument, which contains a key-value pair for the grumble's id.  
-
-```js
-  .controller("GrumbleShowController", [
-    "GrumbleFactory",
-    "$stateParams",
-    GrumbleShowControllerFunction
-  ]);
-
-  function GrumbleShowControllerFunction(GrumbleFactory, $stateParams){
-    this.grumble = GrumbleFactory.get({id: $stateParams.id});
-  }
-```
 
 #### Update `show.html`
 
@@ -429,20 +321,6 @@ This link will trigger the `grumbleNew` state when clicked.
 
 #### Create new controller
 
-```js
-    .controller( "GrumbleNewController", [
-      "GrumbleFactory",
-      GrumbleNewControllerFunction
-    ]);
-
-    function GrumbleNewControllerFunction( GrumbleFactory ){
-      this.grumble = new GrumbleFactory();
-      this.create = function(){
-        this.grumble.$save()
-      }
-    }
-```
-
 ### You Do: New/Create (10 minutes / 1:55)
 
 ### Break (10 minutes / 2:05)
@@ -452,21 +330,6 @@ This link will trigger the `grumbleNew` state when clicked.
 The steps here are pretty similar to those of the last "I Do," with a few exceptions. The biggest one is...
 
 #### Define an `update` method in the Factory
-
-`ngResource` does not come with a native `update` method. We need to define it in the `FactoryFunction` return statement, indicating that `update` corresponds to a `PUT` request.  
-
-```js
-    .factory( "GrumbleFactory", [
-      "$resource",
-      FactoryFunction
-    ])
-
-  function FactoryFunction( $resource ){
-    return $resource( "http://localhost:3000/grumbles/:id", {}, {
-        update: { method: "PUT" }
-    });
-  }
-```
 
 The rest of the steps are a bit more straightforward...  
 
@@ -503,23 +366,6 @@ The form on this page will look a lot like the one in `new.html`, but you'll nee
 
 #### Create `edit.controller.js`
 
-The big addition here is our controller's `update` method. You'll notice that it makes use of `$update`. THIS is the method we defined in the grumble factory. It is preceded by a `$` because this is how `ngResource` indicates it's an instance method.
-
-```js
-    .controller( "GrumbleEditController", [
-      "GrumbleFactory",
-      "$stateParams",
-      GrumbleEditControllerFunction
-    ]);
-
-  function GrumbleEditControllerFunction( GrumbleFactory, $stateParams ){
-    this.grumble = GrumbleFactory.get({id: $stateParams.id});
-    this.update = function(){
-      this.grumble.$update({id: $stateParams.id})
-    }
-  }
-```
-
 ### You Do: Delete (10 minutes)
 
 >  We may not get to this in-class.  
@@ -542,24 +388,6 @@ When clicked, the delete button will trigger a `destroy` method that we have yet
 ```
 
 #### Add Destroy Method to Edit controller
-
-```js
-    .controller( "GrumbleEditController", [
-      "GrumbleFactory",
-      "$stateParams",
-      GrumbleEditControllerFunction
-    ]);
-
-  function GrumbleEditControllerFunction( GrumbleFactory, $stateParams ){
-    this.grumble = GrumbleFactory.get({id: $stateParams.id});
-    this.update = function(){
-      this.grumble.$update({id: $stateParams.id})
-    }
-    this.destroy = function(){
-      this.grumble.$delete({id: $stateParams.id});
-    }
-  }
-```
 
 ### Closing/Questions (10 minutes / 2:30)
 
