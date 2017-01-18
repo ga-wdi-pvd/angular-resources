@@ -29,7 +29,15 @@ We also have something in Angular called a Service. Services are objects too, ju
 
 Like you have seen with constructor functions you can create multiple versions of the same Object that has similar precoded or inherited functionality.
 
-Factories are most commonly used for their data storing capabilities, but maybe you can think up some ways in which you would use a Service over a Factory.
+Which One Should I Use?
+
+The answer is it doesn't really matter. You might take a look at this "cheat sheet" of what should be used when:
+
+[http://demisx.github.io/angularjs/2014/09/14/angular-what-goes-where.html](http://demisx.github.io/angularjs/2014/09/14/angular-what-goes-where.html)
+
+Great article comparing Factories, Services, & Providers:
+
+[http://tylermcginnis.com/angularjs-factory-vs-service-vs-provider/](http://tylermcginnis.com/angularjs-factory-vs-service-vs-provider/)
 
 ## You Do: Walkthrough of Current App (20 minutes / 0:20)
 
@@ -209,11 +217,9 @@ $ touch js/grumblr.factory.js
 Now we can call it in a controller...
 
 ```js
-    .controller( "GrumbleIndexController", [
-      // The factory is passed in as a dependency to our controller.
-      "GrumbleFactory",
-      GrumbleIndexControllerFunction
-    ]);
+    .controller( "GrumbleIndexCtrl", GrumbleIndexCtrl);
+    
+  GrumbleIndexCtrl.$inject = ["GrumbleFactory"];
 
   function GrumbleIndexControllerFunction( GrumbleFactory ){
     // When `helloWorld` is called, it runs the function we defined in our factory file.Factory
@@ -221,26 +227,6 @@ Now we can call it in a controller...
   }
 ```
 > This is nice because it keeps our controller clean. We leave the function declaration(s) to our factory.
-
-<details>
-<summary>Bonus! Services!</summary>
-
-
-A service achieves the same purpose as a factory. It is instantiated, however, using the `new` keyword. Instead of defining an object and returning it, we attach properties and methods to `this`. Let's recreate the above factory using a service...
-
-Our controllers look nearly identical in both examples. The difference is in the content of the factory and service. **What do you notice?**
-
-Which One Should I Use?
-
-The answer is it doesn't really matter. You might take a look at this "cheat sheet" of what should be used when:
-
-[http://demisx.github.io/angularjs/2014/09/14/angular-what-goes-where.html](http://demisx.github.io/angularjs/2014/09/14/angular-what-goes-where.html)
-
-Great article comparing Factories, Services, & Providers:
-
-[http://tylermcginnis.com/angularjs-factory-vs-service-vs-provider/](http://tylermcginnis.com/angularjs-factory-vs-service-vs-provider/)
-</div>
-</details>
 
 ### I Do: Create Grumble Factory (15 minutes / 0:50)
 
